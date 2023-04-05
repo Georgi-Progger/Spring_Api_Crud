@@ -50,7 +50,10 @@ public class AuthRestControllerV1 {
 
 
     @PostMapping("login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
+        if (!userRepository.existsByUsername(loginDto.getName())) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getName(),

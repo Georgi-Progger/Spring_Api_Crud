@@ -1,5 +1,8 @@
-package com.example.rest_api_spring.security;
+package com.example.rest_api_spring.config;
 
+import com.example.rest_api_spring.security.CustomUserDetailService;
+import com.example.rest_api_spring.security.JWTAuthFilter;
+import com.example.rest_api_spring.security.JwtAuthEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,9 +29,8 @@ public class SecurityConfig {
     }
 
 
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .exceptionHandling()
@@ -58,7 +60,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JWTAuthFilter jwtAuthFilter(){
+    public JWTAuthFilter jwtAuthFilter() {
         return new JWTAuthFilter();
     }
 }
