@@ -22,7 +22,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public FileEntity create(FileEntity fileEntity) {
-        return null;
+        return fileRepository.save(fileEntity);
     }
 
     @Override

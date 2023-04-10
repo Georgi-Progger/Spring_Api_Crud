@@ -3,34 +3,34 @@ package com.example.rest_api_spring.rest;
 
 import com.example.rest_api_spring.dto.FileDto;
 import com.example.rest_api_spring.exception.ResponseMessage;
+import com.example.rest_api_spring.service.FileService;
 import com.example.rest_api_spring.service.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/file")
+@RequestMapping("api/v1/files")
 public class FileRestControllerV1 {
 
     private final StorageService storageService;
+    private final FileService fileService;
 
     @Autowired
-    public FileRestControllerV1(StorageService storageService) {
+    public FileRestControllerV1(StorageService storageService, FileService fileService) {
         this.storageService = storageService;
+        this.fileService = fileService;
     }
 
 
     @PostMapping("/upload")
-    public @ResponseBody ResponseEntity<ResponseMessage> upload(@RequestParam(value = "file") MultipartFile file) {
+    public ResponseEntity<ResponseMessage> upload(@RequestParam(value = "file") MultipartFile file) {
         try {
-            storageService.save(file);
-
+            fileService.create(storageService.save(file));
             String message = "Uploaded the file successfully: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
         } catch (Exception e) {
@@ -39,27 +39,18 @@ public class FileRestControllerV1 {
         }
     }
 
-    @GetMapping("/files")
-    public ResponseEntity<List<FileDto>> getListFiles() {
-        List<FileDto> fileInfos = storageService.loadAll().map(path -> {
-            String filename = path.getFileName().toString();
-            String url = MvcUriComponentsBuilder
-                    .fromMethodName(FileRestControllerV1.class, "getFile", path.getFileName().toString())
-                    .build().toString();
-
-            return new FileDto(filename, url);
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
+    @GetMapping()
+    public List<FileDto> getListFiles() {
+        return FileDto.getFilesDto(fileService.loadAll());
     }
 
-    /* @GetMapping("/files/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource file = storageService.load(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-    } */
+    @GetMapping("/{id}")
+    public FileDto getOneFile(@PathVariable int Id) {
+        return FileDto.getFileDto(fileService.getById(Id));
+    }
 
-
+    @DeleteMapping("/delete/{id}")
+    public void deleteFile(@PathVariable int Id){
+        fileService.delete(Id);
+    }
 }

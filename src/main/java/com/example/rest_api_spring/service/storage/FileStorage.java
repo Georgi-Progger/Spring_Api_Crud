@@ -1,5 +1,7 @@
 package com.example.rest_api_spring.service.storage;
 
+import com.example.rest_api_spring.model.FileEntity;
+import com.example.rest_api_spring.model.Status;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.stream.Stream;
 
 @Service
@@ -30,9 +33,16 @@ public class FileStorage implements StorageService {
     }
 
     @Override
-    public void save(MultipartFile file) {
+    public FileEntity save(MultipartFile file) {
         try {
             Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+            FileEntity fileEntity = new FileEntity();
+            fileEntity.setCreated(new Date());
+            fileEntity.setUpdated(new Date());
+            fileEntity.setFileName(file.getOriginalFilename());
+            fileEntity.setFilePath(root + "/" + file.getOriginalFilename());
+            fileEntity.setStatus(Status.ACTIVE);
+            return fileEntity;
         } catch (Exception e) {
             if (e instanceof FileAlreadyExistsException) {
                 throw new RuntimeException("A file of that name already exists.");
