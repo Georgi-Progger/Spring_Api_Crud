@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/file/**").permitAll()
+                .requestMatchers("/api/v1/users/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();

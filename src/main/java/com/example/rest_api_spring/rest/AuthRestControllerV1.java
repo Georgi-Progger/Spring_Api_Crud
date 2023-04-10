@@ -35,6 +35,7 @@ public class AuthRestControllerV1 {
     private PasswordEncoder passwordEncoder;
     private JWTGenerator jwtGenerator;
 
+
     @Autowired
     public AuthRestControllerV1(AuthenticationManager authenticationManager,
                                 UserRepository userRepository,
@@ -47,6 +48,8 @@ public class AuthRestControllerV1 {
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
     }
+
+
 
 
     @PostMapping("login")
